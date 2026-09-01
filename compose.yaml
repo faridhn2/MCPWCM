@@ -1,0 +1,18 @@
+services:
+  woocommerce-insights-mcp:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      PUBLIC_BASE_URL: ${PUBLIC_BASE_URL}
+      CREDENTIAL_ENCRYPTION_KEY: ${CREDENTIAL_ENCRYPTION_KEY}
+      DATABASE_PATH: /app/data/service.db
+      HOST: 0.0.0.0
+      PORT: 3000
+      ALLOW_PRIVATE_WOO_HOSTS: "false"
+    volumes:
+      - woo_mcp_data:/app/data
+
+volumes:
+  woo_mcp_data:

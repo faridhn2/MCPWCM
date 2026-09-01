@@ -1,0 +1,22 @@
+{
+  "name": "woocommerce-insights",
+  "version": "0.1.0",
+  "description": "Read-only WooCommerce product, order, inventory, and sales insights",
+  "author": {
+    "name": "WooCommerce Insights"
+  },
+  "interface": {
+    "displayName": "WooCommerce Insights",
+    "shortDescription": "Ask about your store catalog, orders, sales, and stock.",
+    "longDescription": "Connect a WooCommerce store with a WordPress application password, then ask for privacy-minimized product, order, inventory, and sales analysis.",
+    "developerName": "WooCommerce Insights",
+    "category": "Business",
+    "capabilities": [],
+    "defaultPrompt": [
+      "Summarize sales for the last 30 days.",
+      "Which products generated the most revenue?",
+      "Show products that need a stock refill."
+    ]
+  },
+  "mcpServers": "./.mcp.json"
+}

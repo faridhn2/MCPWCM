@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "woocommerce-insights": {
+      "type": "http",
+      "url": "https://mcp.your-domain.example/mcp"
+    }
+  }
+}
