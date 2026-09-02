@@ -91,7 +91,7 @@ function connectPage(input: {
     <h1>Connect your store</h1>
     <p><strong>${escapeHtml(input.clientName)}</strong> is requesting read-only access to WooCommerce products, orders, inventory, and sales analytics.</p>
     ${error}
-    <form method="post" action="${escapeHtml(input.authorizeUrl)}" target="_top" autocomplete="off">
+    <form method="post" action="${escapeHtml(input.authorizeUrl)}" autocomplete="off">
       <input type="hidden" name="request_id" value="${escapeHtml(input.requestId)}">
       <label>Store URL
         <input type="text" name="store_url" inputmode="url" autocapitalize="none" spellcheck="false" placeholder="https://shop.example.com" required value="${escapeHtml(input.storeUrl ?? "")}">
