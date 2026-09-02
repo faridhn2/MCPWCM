@@ -94,7 +94,7 @@ function connectPage(input: {
     <form method="post" action="${escapeHtml(input.authorizeUrl)}" target="_top" autocomplete="off">
       <input type="hidden" name="request_id" value="${escapeHtml(input.requestId)}">
       <label>Store URL
-        <input type="url" name="store_url" placeholder="https://shop.example.com" required value="${escapeHtml(input.storeUrl ?? "")}">
+        <input type="text" name="store_url" inputmode="url" autocapitalize="none" spellcheck="false" placeholder="https://shop.example.com" required value="${escapeHtml(input.storeUrl ?? "")}">
       </label>
       <label>WordPress username
         <input type="text" name="username" required autocomplete="username" value="${escapeHtml(input.username ?? "")}">
