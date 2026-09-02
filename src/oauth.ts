@@ -58,6 +58,7 @@ function isAllowedRedirectUri(rawUri: string): boolean {
 function connectPage(input: {
   requestId: string;
   clientName: string;
+  authorizeUrl: string;
   storeUrl?: string;
   username?: string;
   error?: string;
@@ -90,7 +91,7 @@ function connectPage(input: {
     <h1>Connect your store</h1>
     <p><strong>${escapeHtml(input.clientName)}</strong> is requesting read-only access to WooCommerce products, orders, inventory, and sales analytics.</p>
     ${error}
-    <form method="post" action="/oauth/authorize" autocomplete="off">
+    <form method="post" action="${escapeHtml(input.authorizeUrl)}" target="_top" autocomplete="off">
       <input type="hidden" name="request_id" value="${escapeHtml(input.requestId)}">
       <label>Store URL
         <input type="url" name="store_url" placeholder="https://shop.example.com" required value="${escapeHtml(input.storeUrl ?? "")}">
@@ -231,16 +232,22 @@ export function createOAuthRouter(config: AppConfig, database: ServiceDatabase):
       scope: parsed.data.scope,
       resource: parsed.data.resource,
     });
-    response.type("html").send(connectPage({ requestId: pending.id, clientName: client.clientName }));
+    response.type("html").send(connectPage({
+      requestId: pending.id,
+      clientName: client.clientName,
+      authorizeUrl: `${config.publicBaseUrl}/oauth/authorize`,
+    }));
   });
 
   router.post("/oauth/authorize", async (request, response) => {
     const requestId = String(request.body.request_id || "");
     const pending = database.getAuthorizationRequest(requestId);
     if (!pending) {
+      console.warn("OAuth authorization form received an expired request");
       response.status(400).type("html").send("Authorization request expired. Return to the assistant and try connecting again.");
       return;
     }
+    console.info("OAuth authorization form submitted", { clientId: pending.clientId });
     const client = database.getClient(pending.clientId);
     if (!client) {
       oauthError(response, 400, "invalid_client", "OAuth client no longer exists");
@@ -272,6 +279,10 @@ export function createOAuthRouter(config: AppConfig, database: ServiceDatabase):
       redirect.searchParams.set("code", code);
       redirect.searchParams.set("iss", config.publicBaseUrl);
       if (consumed.state) redirect.searchParams.set("state", consumed.state);
+      console.info("OAuth authorization approved", {
+        clientId: consumed.clientId,
+        redirectHost: redirect.host,
+      });
       response.redirect(303, redirect.toString());
     } catch (error) {
       const message =
@@ -280,9 +291,11 @@ export function createOAuthRouter(config: AppConfig, database: ServiceDatabase):
           : error instanceof Error
             ? error.message
             : "Could not connect the store";
+      console.warn("OAuth authorization verification failed", { clientId: pending.clientId, reason: message });
       response.status(400).type("html").send(connectPage({
         requestId,
         clientName: client.clientName,
+        authorizeUrl: `${config.publicBaseUrl}/oauth/authorize`,
         storeUrl: rawStoreUrl,
         username,
         error: message,
@@ -295,6 +308,7 @@ export function createOAuthRouter(config: AppConfig, database: ServiceDatabase):
     response.setHeader("Pragma", "no-cache");
     const client = authenticateClient(request, database);
     if (!client) {
+      console.warn("OAuth token request rejected: client authentication failed");
       response.setHeader("WWW-Authenticate", 'Basic realm="oauth-token"');
       oauthError(response, 401, "invalid_client", "Client authentication failed");
       return;
@@ -312,10 +326,14 @@ export function createOAuthRouter(config: AppConfig, database: ServiceDatabase):
         authorization.redirectUri !== redirectUri ||
         !safeEqual(authorization.codeChallenge, challenge)
       ) {
+        console.warn("OAuth token request rejected: authorization code validation failed", {
+          clientId: client.clientId,
+        });
         oauthError(response, 400, "invalid_grant", "Authorization code is invalid or expired");
         return;
       }
       const tokens = database.createTokens(authorization, config.accessTokenTtlSeconds, config.refreshTokenTtlSeconds);
+      console.info("OAuth token issued", { clientId: client.clientId });
       response.json({
         access_token: tokens.accessToken,
         token_type: "Bearer",
