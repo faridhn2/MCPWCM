@@ -87,7 +87,7 @@ codex plugin add woocommerce-insights@mcpwcm
 
 Restart Codex, enable **WooCommerce Insights** in Plugins, and select **Authenticate**. Each person (and each computer) completes OAuth with their own WordPress username and Application Password. OAuth tokens and encrypted WooCommerce credentials are intentionally not shared between computers or ChatGPT accounts.
 
-Codex chooses a loopback callback port locally for every authorization. The server accepts that dynamic callback as required for native-app OAuth. If a browser blocks the automatic handoff after the store is verified, the authorization response displays a **Return to the assistant** button; select it once instead of resubmitting the credentials form.
+Codex chooses a loopback callback port locally for every authorization. The server accepts that dynamic callback as required for native-app OAuth. After the store is verified, the authorization page displays a **Return to the assistant** button; select it once instead of resubmitting the credentials form.
 
 ChatGPT on the web does not read a computer's local Codex configuration. To use the service in ChatGPT web, add the public `https://mcp.cdemy.ir/mcp` connection or install its published remote plugin in the target ChatGPT account.
 ## Connect Claude

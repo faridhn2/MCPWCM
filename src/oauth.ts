@@ -129,8 +129,8 @@ function callbackFallbackPage(callbackUrl: string): string {
 </head>
 <body>
   <main>
-    <h1>Store connected</h1>
-    <p>Returning you to the assistant now. If this page remains open, select the button below to finish the connection.</p>
+    <h1>Store verified</h1>
+    <p>Your WooCommerce credentials are connected. Select the button below to return the authorization result to your assistant.</p>
     <a href="${escapedCallbackUrl}">Return to the assistant</a>
   </main>
 </body>
@@ -309,11 +309,7 @@ export function createOAuthRouter(config: AppConfig, database: ServiceDatabase):
         clientId: consumed.clientId,
         redirectHost: redirect.host,
       });
-      response
-        .status(303)
-        .setHeader("Location", redirect.toString())
-        .type("html")
-        .send(callbackFallbackPage(redirect.toString()));
+      response.status(200).type("html").send(callbackFallbackPage(redirect.toString()));
     } catch (error) {
       const message =
         error instanceof WooCommerceError && (error.status === 401 || error.status === 403)
