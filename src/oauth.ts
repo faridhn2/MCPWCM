@@ -110,6 +110,32 @@ function connectPage(input: {
 </html>`;
 }
 
+function callbackFallbackPage(callbackUrl: string): string {
+  const escapedCallbackUrl = escapeHtml(callbackUrl);
+  return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Finish connecting</title>
+  <style>
+    :root { color-scheme: light; font-family: ui-sans-serif, system-ui, sans-serif; }
+    body { margin: 0; background: #f4f1eb; color: #1e2430; }
+    main { max-width: 520px; margin: 12vh auto; padding: 38px; background: #fff; border: 1px solid #ded8cf; border-radius: 18px; box-shadow: 0 18px 50px #29324118; }
+    h1 { margin: 0 0 8px; font-size: 28px; letter-spacing: -.02em; }
+    p { color: #5c6573; line-height: 1.55; }
+    a { display: block; margin-top: 24px; padding: 13px; border-radius: 9px; background: #6d28d9; color: white; font-weight: 700; text-align: center; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Store connected</h1>
+    <p>Returning you to the assistant now. If this page remains open, select the button below to finish the connection.</p>
+    <a href="${escapedCallbackUrl}">Return to the assistant</a>
+  </main>
+</body>
+</html>`;
+}
 function getBasicCredentials(request: Request): { id: string; secret: string } | null {
   const authorization = request.header("authorization");
   if (!authorization?.startsWith("Basic ")) return null;
@@ -283,7 +309,11 @@ export function createOAuthRouter(config: AppConfig, database: ServiceDatabase):
         clientId: consumed.clientId,
         redirectHost: redirect.host,
       });
-      response.redirect(303, redirect.toString());
+      response
+        .status(303)
+        .setHeader("Location", redirect.toString())
+        .type("html")
+        .send(callbackFallbackPage(redirect.toString()));
     } catch (error) {
       const message =
         error instanceof WooCommerceError && (error.status === 401 || error.status === 403)

@@ -1,0 +1,20 @@
+{
+  "name": "mcpwcm",
+  "interface": {
+    "displayName": "WooCommerce Insights"
+  },
+  "plugins": [
+    {
+      "name": "woocommerce-insights",
+      "source": {
+        "source": "local",
+        "path": "./plugins/woocommerce-insights"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Business"
+    }
+  ]
+}

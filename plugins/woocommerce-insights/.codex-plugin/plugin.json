@@ -1,6 +1,6 @@
 {
   "name": "woocommerce-insights",
-  "version": "0.1.0",
+  "version": "0.1.0+codex.20260903055521",
   "description": "Read-only WooCommerce product, order, inventory, and sales insights",
   "author": {
     "name": "WooCommerce Insights"

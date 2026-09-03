@@ -76,6 +76,20 @@ Deploy the server to public HTTPS first. In ChatGPT, enable Developer mode, open
 
 ChatGPT generates a `plugin_asdk_app...` technical ID when the remote MCP connection is registered. That external ID is required to create the final `.app.json` used for a locally installed ChatGPT plugin, so it cannot be hard-coded before registration. Public plugin submission scans the deployed MCP server directly.
 
+## Install the Codex plugin on another computer
+
+The repository includes a Git marketplace, so each Codex desktop, CLI, or IDE user can install the same remote MCP server without editing a local configuration file:
+
+```bash
+codex plugin marketplace add faridhn2/MCPWCM --ref main
+codex plugin add woocommerce-insights@mcpwcm
+```
+
+Restart Codex, enable **WooCommerce Insights** in Plugins, and select **Authenticate**. Each person (and each computer) completes OAuth with their own WordPress username and Application Password. OAuth tokens and encrypted WooCommerce credentials are intentionally not shared between computers or ChatGPT accounts.
+
+Codex chooses a loopback callback port locally for every authorization. The server accepts that dynamic callback as required for native-app OAuth. If a browser blocks the automatic handoff after the store is verified, the authorization response displays a **Return to the assistant** button; select it once instead of resubmitting the credentials form.
+
+ChatGPT on the web does not read a computer's local Codex configuration. To use the service in ChatGPT web, add the public `https://mcp.cdemy.ir/mcp` connection or install its published remote plugin in the target ChatGPT account.
 ## Connect Claude
 
 In Claude, go to Customize → Connectors → Add custom connector and enter the same `https://<domain>/mcp` URL. The OAuth discovery and dynamic registration endpoints are shared with ChatGPT. On Team and Enterprise plans, an Owner must add the custom web connector at the organization level before members connect it.
